@@ -128,3 +128,12 @@ git clone ""
  sudo apt update
 sudo apt install python3-pip
 source venv/bin/activate  # For Linux/MacOS
+
+if db not connected ex:postgres then go to ec2  security groups vpc allow tcp all and add postgress ip all
+    also allow in bound and outnbound ips
+
+  then connect the same vopc to both ec2 and postgres then connect rds with ec2
+
+then follow below step
+after connecting perform the migrate 
+then run server (python manage.py runserver 0.0.0.0:8000)
