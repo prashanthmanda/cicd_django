@@ -76,16 +76,16 @@ WSGI_APPLICATION = 'django_proj.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
 
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'postgres',        # Database name
-        # 'USER': 'psn',        # Database username
-        # 'PASSWORD': '96760Psn$',    # Database password
-        # # 'HOST': 'w3-django-project.cdxmgq9zqqlr.us-east-1d.rds.amazonaws.com',           # Database host (use 'localhost' or the IP address of your server)
-        # 'HOST':'ekart.cdmssqky4qgu.us-east-1.rds.amazonaws.com',
-        # 'PORT': '5432',                 # Port number (default for PostgreSQL)
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',        # Database name
+        'USER': 'psn',        # Database username
+        'PASSWORD': '96760Psn$',    # Database password
+        # 'HOST': 'w3-django-project.cdxmgq9zqqlr.us-east-1d.rds.amazonaws.com',           # Database host (use 'localhost' or the IP address of your server)
+        'HOST':'ekart.cdmssqky4qgu.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',                 # Port number (default for PostgreSQL)
     }
 }
 
