@@ -137,3 +137,10 @@ if db not connected ex:postgres then go to ec2  security groups vpc allow tcp al
 then follow below step
 after connecting perform the migrate 
 then run server (python manage.py runserver 0.0.0.0:8000)
+
+if gettings:
+  Invalid HTTP_HOST header: '44.211.162.51:8000'. You may need to add '44.211.162.51' to ALLOWED_HOSTS.
+  Exception Location:	
+  
+ edit in settings.py->
+ ALLOWED_HOSTS = ['44.211.162.51', 'your-domain.com', 'localhost', '127.0.0.1']
