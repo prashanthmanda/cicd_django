@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main  # Change to 'main' instead of 'master'
-
 jobs:
   build:
     runs-on: ubuntu-latest
