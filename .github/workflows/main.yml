@@ -3,7 +3,7 @@ name: Django CI/CD
 on:
   push:
     branches:
-      - main
+      - main  # Change to 'main' instead of 'master'
 
 jobs:
   build:
@@ -13,23 +13,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-          architecture: x64
-          token: ${{ secrets.GITHUB_TOKEN }}
-          cache-dependency-path: ~/.cache/pip
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Run migrations
+        run: |
+          python manage.py migrate
+
+      - name: Collect static files
+        run: |
+          python manage.py collectstatic --noinput
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -38,15 +38,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            echo "$KEY" > /home/ubuntu/.ssh/id_rsa
-            chmod 600 /home/ubuntu/.ssh/id_rsa
-            git config --global user.name "github-actions"
-            git config --global user.email "github-actions@github.com"
-            cd /home/ubuntu/cicd_django
-            if [ ! -d ".git" ]; then
-              git clone https://github.com/your-username/your-repo.git .
-            else
-              git pull origin main
-            fi
-            sudo systemctl daemon-reload
-            sudo systemctl restart cicdapp.service
+            cd /home/ubuntu/cicd_django   # Ensure this path matches your project directory
+            git pull
+            sudo systemctl restart gunicorn    # Restart Gunicorn
+            sudo systemctl restart nginx       # Restart Nginx
