@@ -3,7 +3,7 @@ name: Django CI/CD
 on:
   push:
     branches:
-      - main
+      - main  # Make sure this matches your default branch
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.12  # Match the version to your EC2 Python version
+          python-version: 3.12  # Match this version to your EC2 Python version
 
       - name: Install dependencies
         run: |
@@ -34,15 +34,27 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          host: ${{ secrets.EC2_HOST }}  # Your EC2 IP or domain
+          username: ${{ secrets.EC2_USERNAME }}  # EC2 user (e.g., 'ubuntu')
+          key: ${{ secrets.EC2_PRIVATE_KEY }}  # SSH private key for authentication
           script: |
-            cd /home/ubuntu/cicd_django
-            git pull
-            source venv/bin/activate  # Activate your virtual environment
-            pip install -r requirements.txt  # Install dependencies
+            cd /home/ubuntu/cicd_django  # Go to your project directory
+            git pull  # Pull the latest changes from the repo
+
+            # Activate the virtual environment
+            source /home/ubuntu/cicd_django/venv/bin/activate  # Adjust the path as needed
+
+            # Install dependencies in the virtual environment
+            pip install -r requirements.txt
+
+            # Run migrations to update the database schema
             python manage.py migrate
+
+            # Collect static files for production
             python manage.py collectstatic --noinput
+
+            # Restart Gunicorn (assuming it's your WSGI server)
             sudo systemctl restart gunicorn
+
+            # Restart Nginx (if you're using it as a reverse proxy)
             sudo systemctl restart nginx
