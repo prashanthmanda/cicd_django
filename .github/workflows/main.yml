@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '20'
 
@@ -20,9 +23,8 @@ jobs:
         with:
           python-version: 3.x
           architecture: x64
-          token: ${{secrets.GITHUB_TOKEN}}
+          token: ${{ secrets.GITHUB_TOKEN }}
           cache-dependency-path: ~/.cache/pip
-
 
       - name: Install dependencies
         run: |
@@ -36,7 +38,15 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
+            echo "$KEY" > /home/ubuntu/.ssh/id_rsa
+            chmod 600 /home/ubuntu/.ssh/id_rsa
+            git config --global user.name "github-actions"
+            git config --global user.email "github-actions@github.com"
             cd /home/ubuntu/cicd_django
-            git pull
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/your-username/your-repo.git .
+            else
+              git pull origin main
+            fi
             sudo systemctl daemon-reload
             sudo systemctl restart cicdapp.service
