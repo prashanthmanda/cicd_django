@@ -3,7 +3,7 @@ name: Django CI/CD
 on:
   push:
     branches:
-      - main
+      - main  # Change to 'main' instead of 'master'
 
 jobs:
   build:
@@ -12,21 +12,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          node-version: '20'
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-          architecture: x64
-          token: ${{secrets.GITHUB_TOKEN}}
-          cache-dependency-path: ./path/to/dependencies
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Run migrations
+        run: |
+          python manage.py migrate
+
+      - name: Collect static files
+        run: |
+          python manage.py collectstatic --noinput
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -35,7 +38,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            cd /home/ubuntu/cicd_django
+            cd /home/ubuntu/cicd_django   # Ensure this path matches your project directory
             git pull
-            sudo systemctl daemon-reload
-            sudo systemctl restart cicdapp.service
+            sudo systemctl restart gunicorn    # Restart Gunicorn
+            sudo systemctl restart nginx       # Restart Nginx
