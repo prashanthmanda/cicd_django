@@ -3,7 +3,8 @@ name: Django CI/CD
 on:
   push:
     branches:
-      - main  # Change to 'main' instead of 'master'
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.x
+          python-version: 3.12  # Match the version to your EC2 Python version
 
       - name: Install dependencies
         run: |
@@ -37,7 +38,11 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            cd /home/ubuntu/cicd_django   # Ensure this path matches your project directory
+            cd /home/ubuntu/cicd_django
             git pull
-            sudo systemctl restart gunicorn    # Restart Gunicorn
-            sudo systemctl restart nginx       # Restart Nginx
+            source venv/bin/activate  # Activate your virtual environment
+            pip install -r requirements.txt  # Install dependencies
+            python manage.py migrate
+            python manage.py collectstatic --noinput
+            sudo systemctl restart gunicorn
+            sudo systemctl restart nginx
