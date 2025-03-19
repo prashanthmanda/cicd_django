@@ -152,6 +152,24 @@ if gettings:
 git config --global user.name
 git config --global user.email
 
+#to check current github login 
+$ git credential fill <<< "protocol=https
+host=github.com"
+
+--gives below o/p
+protocol=https
+host=github.com
+username=user
+password=fgdfjg
+
+#ro remove git credentials from ur system follow below steps
+If you're on Windows, Git credentials may be stored in Credential Manager:
+
+Open Control Panel → Go to Credential Manager.
+Click Windows Credentials.
+Find an entry called github.com and Remove it.
+
+
 gh auth logout
 gh auth login
 
