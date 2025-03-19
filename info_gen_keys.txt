@@ -1,0 +1,136 @@
+How to Get These Keys (SECRET_KEY, my-private-key, my-public-key)?
+You need to generate or retrieve each of these keys based on your requirements. Below is a step-by-step guide for getting each key.
+
+🔹 1️⃣ How to Get SECRET_KEY (Django Security Key)
+🔸 Option 1: Generate a New SECRET_KEY (Recommended)
+If you don’t have a SECRET_KEY, generate one using Python:
+
+🔹 Method 1: Use Django's secrets Module
+Run this command in a Python shell:
+
+python
+Copy
+import secrets
+print(secrets.token_urlsafe(50))
+This will generate a random, secure SECRET_KEY.
+Example output:
+perl
+Copy
+Jx^!4H3m@#bV2$5fTzQW8NpK&xYzKpLd@TgCmJ9w6G
+🔹 Method 2: Use Django Command
+If you have Django installed, you can generate a key with:
+
+sh
+Copy
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+Example output:
+perl
+Copy
+f34b$kjdfg9@8Zmn&h4lM9s8Kq#Yxg5P@6T7GvBpC
+🔸 Option 2: Retrieve from an Existing Django Project
+If your Django app is already running, check settings.py for:
+
+python
+Copy
+SECRET_KEY = "your-existing-secret-key"
+🔸 Store SECRET_KEY in AWS Secrets Manager
+Once you have a SECRET_KEY, store it securely:
+
+Go to AWS Console → Secrets Manager (AWS Secrets Manager)
+Click "Store a new secret".
+Select "Other type of secret".
+Enter the key-value pair:
+markdown
+Copy
+Key          | Value
+-------------------------------
+SECRET_KEY   | f34b$kjdfg9@8Zmn&h4lM9s8Kq#Yxg5P@6T7GvBpC
+Click Next, set the secret name as "my-secret-key", and save.
+🔹 2️⃣ How to Get my-private-key (EC2 SSH Private Key)
+🔑 What is it?
+
+The private key is used to connect to an EC2 instance via SSH.
+If you already have an EC2 instance, you must use the private key that was created when launching it.
+🔸 Option 1: Check If You Already Have a Private Key
+Go to AWS Console → EC2 → Key Pairs (AWS Key Pairs)
+Look for your key pair (e.g., my-ec2-key).
+If you already have the private key file (my-ec2-key.pem), use that.
+If you lost it, you must create a new key pair (see below).
+🔸 Option 2: Create a New Private Key (If You Don’t Have One)
+Go to AWS Console → EC2 → Key Pairs.
+Click "Create Key Pair".
+Choose:
+Key Pair Name: my-ec2-key
+Key Type: RSA (recommended)
+Private Key Format: .pem
+Click Create Key Pair → Download my-ec2-key.pem.
+🔸 Store my-private-key in AWS Secrets Manager
+Once you have the private key:
+
+Go to AWS Secrets Manager → Store a new secret.
+Select "Other type of secret".
+Paste the private key as the secret value:
+vbnet
+Copy
+-----BEGIN RSA PRIVATE KEY-----
+your-private-key-content-here
+-----END RSA PRIVATE KEY-----
+Click Next, set the secret name as "my-private-key", and save.
+🔹 3️⃣ How to Get my-public-key (EC2 SSH Public Key)
+🔑 What is it?
+
+The public key is used to verify SSH authentication on the server.
+If you already have an existing EC2 key pair, you can extract the public key from the private key.
+🔸 Option 1: Extract Public Key from Private Key
+If you have the .pem private key file:
+
+sh
+Copy
+ssh-keygen -y -f my-ec2-key.pem
+Example output:
+vbnet
+Copy
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA...your-public-key
+🔸 Option 2: Check the ~/.ssh/authorized_keys File (on EC2)
+If your EC2 instance already has an SSH key, log in and check:
+
+sh
+Copy
+cat ~/.ssh/authorized_keys
+This will display the public key.
+
+🔸 Store my-public-key in AWS Secrets Manager
+Go to AWS Secrets Manager → Store a new secret.
+Select "Other type of secret".
+Paste the public key as the secret value:
+vbnet
+Copy
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA...your-public-key
+Click Next, set the secret name as "my-public-key", and save.
+🔹 How to Use These Keys in AWS CodeBuild?
+Once your secrets are stored in AWS Secrets Manager, AWS CodeBuild can access them.
+
+✅ Update buildspec.yml to Use These Secrets
+yaml
+Copy
+env:
+  secrets-manager:
+    SECRET_KEY: "my-secret-key"
+    STREAM_INCOMING_PRIVATE_KEY: "my-private-key"
+    STREAM_INCOMING_PUBLIC_KEY: "my-public-key"
+✅ Use Private Key to SSH into EC2 in buildspec.yml
+sh
+Copy
+echo "$STREAM_INCOMING_PRIVATE_KEY" > ec2-key.pem
+chmod 600 ec2-key.pem
+ssh -i ec2-key.pem ec2-user@your-ec2-ip
+This retrieves the private key from Secrets Manager and uses it to connect to an EC2 instance.
+✅ Final Summary
+🔑 Key Name	📌 How to Get It
+SECRET_KEY	Generate using Python (secrets module) or Django
+my-private-key	Check AWS EC2 Key Pairs or create a new one
+my-public-key	Extract from private key or check EC2’s authorized_keys file
+AWS Storage	Store in AWS Secrets Manager for security
+These keys are essential for security and authentication, and AWS Secrets Manager ensures they are safely stored and accessed in your AWS CodeBuild pipeline.
+
+Would you like help testing or automating the setup? 🚀😊

@@ -9,9 +9,13 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+# from pathlib import Path
 
+# for deplyments
+import os
+import dj_database_url  # Make sure you installed `dj-database-url`
 from pathlib import Path
-
+# end for deployments
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-kp9-$l$xp_r#+z7ik*=gr-m-l24yx7o8*(cqs*5j5fwdl4qio#'
+# SECRET_KEY = 'django-insecure-kp9-$l$xp_r#+z7ik*=gr-m-l24yx7o8*(cqs*5j5fwdl4qio#'
+# for deplyments
+
+SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")
+STREAM_INCOMING_PRIVATE_KEY = os.getenv("STREAM_INCOMING_PRIVATE_KEY", "")
+STREAM_INCOMING_PUBLIC_KEY = os.getenv("STREAM_INCOMING_PUBLIC_KEY", "")
+# end for deployments
+
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -77,21 +90,30 @@ WSGI_APPLICATION = 'django_proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
+# DATABASES = {
+#     'default': {
+#         # 'ENGINE': 'django.db.backends.sqlite3',
+#         # 'NAME': BASE_DIR / 'db.sqlite3',
 
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',        # Database name
-        'USER': 'psn',        # Database username
-        'PASSWORD': '96760Psn$',    # Database password
-        # 'HOST': 'w3-django-project.cdxmgq9zqqlr.us-east-1d.rds.amazonaws.com',           # Database host (use 'localhost' or the IP address of your server)
-        'HOST':'ekart.cdmssqky4qgu.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',                 # Port number (default for PostgreSQL)
-    }
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',        # Database name
+#         'USER': 'psn',        # Database username
+#         'PASSWORD': '96760Psn$',    # Database password
+#         # 'HOST': 'w3-django-project.cdxmgq9zqqlr.us-east-1d.rds.amazonaws.com',           # Database host (use 'localhost' or the IP address of your server)
+#         'HOST':'ekart.cdmssqky4qgu.us-east-1.rds.amazonaws.com',
+#         'PORT': '5432',                 # Port number (default for PostgreSQL)
+#     }
+# }
+
+# to hide the db credentials and strore these in aws secret manager
+DATABASES = {
+    "default": dj_database_url.config(
+        # default=os.getenv("DATABASE_DEFAULT_URL", "postgres://user:password@localhost:5432/dbname")
+        default=os.getenv("DATABASE_DEFAULT_URL")
+    )
 }
 
+# end
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
