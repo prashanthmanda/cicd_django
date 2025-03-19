@@ -1,66 +1,66 @@
-# version: 0.1
+version: 0.1
 
-# environment_variables:
-#   plaintext:
-#     DJANGO_SETTINGS_MODULE: config.settings.test
-#     SECRET_KEY: nosecret
-#     DATABASE_DEFAULT_URL: sqlite:///db1.sqlite3
-#     DATABASE_STREAMDATA_URL: sqlite:///db2.sqlite3
-#     STREAM_INCOMING_PRIVATE_KEY: changeme
-#     STREAM_INCOMING_PUBLIC_KEY: changeme
-#     GOOGLE_API_KEY: changeme
-#     OPBEAT_ENABLED: False
-
-# phases:
-#   pre_build:
-#     commands:
-#       - echo Prebuild ops
-#       - pip3 install -r requirements.txt
-#   build:
-#     commands:
-#       - echo Building the application 
-#   post_build:
-#     commands:
-#       - echo Build completed on `date`
-# artifacts:
-#   files:
-#     - '**/*'
-
-
-version: 0.2
-
-env:
-  variables:
-    DJANGO_SETTINGS_MODULE: "config.settings.test"
-    # DATABASE_DEFAULT_URL: "postgres://psn:1234@aws-postgres-host:5432/ekart"
-  secrets-manager:
-    DATABASE_DEFAULT_URL: "my-database-secret"
-    SECRET_KEY: "my-secret-key"
-    STREAM_INCOMING_PRIVATE_KEY: "my-private-key"
-    STREAM_INCOMING_PUBLIC_KEY: "my-public-key"
-    # GOOGLE_API_KEY: "my-google-api-key"
+environment_variables:
+  plaintext:
+    DJANGO_SETTINGS_MODULE: config.settings.test
+    SECRET_KEY: nosecret
+    DATABASE_DEFAULT_URL: sqlite:///db1.sqlite3
+    DATABASE_STREAMDATA_URL: sqlite:///db2.sqlite3
+    STREAM_INCOMING_PRIVATE_KEY: changeme
+    STREAM_INCOMING_PUBLIC_KEY: changeme
+    GOOGLE_API_KEY: changeme
+    OPBEAT_ENABLED: False
 
 phases:
   pre_build:
     commands:
-      - echo "Installing dependencies..."
-      - pip3 install --upgrade pip
+      - echo Prebuild ops
       - pip3 install -r requirements.txt
-      - echo "Dependencies installed."
-
   build:
     commands:
-      - echo "Running database migrations..."
-      - python manage.py migrate
-      - echo "Collecting static files..."
-      - python manage.py collectstatic --noinput
-      - echo "Build process completed."
-
+      - echo Building the application 
   post_build:
     commands:
-      - echo "Build finished on `date`"
-
+      - echo Build completed on `date`
 artifacts:
   files:
     - '**/*'
-  discard-paths: no
+
+
+# version: 0.2
+
+# env:
+#   variables:
+#     DJANGO_SETTINGS_MODULE: "config.settings.test"
+#     # DATABASE_DEFAULT_URL: "postgres://psn:1234@aws-postgres-host:5432/ekart"
+#   secrets-manager:
+#     DATABASE_DEFAULT_URL: "my-database-secret"
+#     SECRET_KEY: "my-secret-key"
+#     STREAM_INCOMING_PRIVATE_KEY: "my-private-key"
+#     STREAM_INCOMING_PUBLIC_KEY: "my-public-key"
+#     # GOOGLE_API_KEY: "my-google-api-key"
+
+# phases:
+#   pre_build:
+#     commands:
+#       - echo "Installing dependencies..."
+#       - pip3 install --upgrade pip
+#       - pip3 install -r requirements.txt
+#       - echo "Dependencies installed."
+
+#   build:
+#     commands:
+#       - echo "Running database migrations..."
+#       - python manage.py migrate
+#       - echo "Collecting static files..."
+#       - python manage.py collectstatic --noinput
+#       - echo "Build process completed."
+
+#   post_build:
+#     commands:
+#       - echo "Build finished on `date`"
+
+# artifacts:
+#   files:
+#     - '**/*'
+#   discard-paths: no
